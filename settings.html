@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .back-button {
+            cursor: pointer;
+            margin-right: auto;
+        }
+
+        .navbar {
+            padding-block: 20px;
+            padding-left: 10px !important;
+        }
+
+        .title {
+            font-size: 1.8rem;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            padding: 20px;
+            padding-top: 0px;
+        }
+
+        .settings-option {
+            background-color: #40d154;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 10px;
+            text-align: center;
+            width: 99%;
+            max-width: 900px;
+        }
+
+        .settings-option {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .current-settings {
+            text-align: center;
+            font-size: 1rem;
+            margin-top: -10px;
+
+        }
+
+        .current-settings h3 {
+            margin-bottom: 10px;
+        }
+
+        .current-settings i {
+            margin-right: 10px;
+        }
+
+        .current-settings p {
+            font-size: 1.25rem;
+        }
+
+        /* ripple effect css */
+
+        .ripple-target {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-target .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            pointer-events: none;
+            z-index: 1;
+            /* Ensures ripple appears above content */
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                /* Adjust scaling as needed */
+                opacity: 0;
+            }
+        }
+
+        .icon-wrapper {
+            position: relative;
+            width: 47px;
+        }
+
+        /* modal style */
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #353535;
+            margin: 5% auto;
+            padding: 20px;
+            margin-top: 10vh;
+            border: 1px solid #353535;
+            width: 80%;
+            max-width: 900px;
+            border-radius: 10px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: rgb(255, 255, 255);
+            text-decoration: underline #8591ff;
+        }
+
+        a:hover {
+            color: #d3d7ff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" id="backBtn">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Settings</h2>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="content">
+        <div class="current-settings">
+            <h3><i class="fa-regular fa-user"></i>Your Board and Class</h3>
+            <p id="current-board-class"></p>
+        </div>
+        <hr style="width: 90%; max-width: 260px; background-color: #ffffff; opacity: 0.7;">
+        <div class="settings-options">
+            <button id="changeBoardClassBtn" class="settings-option ripple-target">Change Board & Class</button>
+            <button id="privacyPolicyBtn" class="settings-option ripple-target">Privacy Policy</button>
+            <button id="termsConditionsBtn" class="settings-option ripple-target">Terms and Conditions</button>
+            <button id="creditsBtn" class="settings-option ripple-target">Credits</button>
+        </div>
+    </section>
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeBtn">&times;</span>
+            <h1>Privacy Policy</h1><br>
+            <p><strong>Effective Date:</strong> November 25, 2024</p><br>
+            <p>At LearnGupt, we respect your privacy and are committed to protecting your data. This Privacy Policy
+                explains how we handle and safeguard your data when you use our app or website.</p>
+            <br>
+            <h2>Scope of the Privacy Policy</h2>
+            <p>This Privacy Policy applies to both the LearnGupt website and the LearnGupt app, which provides a web
+                view of the website. By using our services, you agree to the terms outlined in this Privacy Policy.</p>
+            <br>
+            <h2>No Personal Data Collection</h2>
+            <p>We do not collect, process, or store any personal information such as names, email addresses, or any
+                other identifiable data. Both the app and website use local storage on your device to save non-sensitive
+                data, such as user preferences and progress. This data remains on your device and is never sent to our
+                servers or shared with third parties.</p><br>
+            <p>You have full control over this data. For the app, you can delete it by clearing the app cache or
+                uninstalling the app. For the website, you can clear your browser's local storage settings.</p>
+            <br>
+            <h2>Third-Party Services</h2>
+            <p>LearnGupt does not use third-party tracking or analytics tools. In the future, we may integrate
+                advertisements through Google AdMob. These advertisements will follow industry privacy standards and may
+                use anonymized data for relevance. Additionally, since the app is distributed through the Google Play
+                Store, any data collected during installation or updates is subject to Google's privacy policies.</p>
+            <br>
+            <h2>Online Security</h2>
+            <p>All communications between your device and the LearnGupt website are encrypted using SSL to ensure
+                security. Data stored in local storage is secure and accessible only to your device, remaining out of
+                reach from us or any other party.</p>
+            <br>
+            <h2>Advertisements (Future Scope)</h2>
+            <p>Future updates to our app or website may include advertisements. Any ads displayed will comply with
+                privacy regulations and may use anonymized data to improve relevance.</p>
+            <br>
+            <h2>Your Rights</h2>
+            <p>You have complete control over the local data stored on your device. App data can be deleted by clearing
+                the cache or uninstalling the app, while website data can be cleared through your browser settings.</p>
+            <br>
+            <h2>Updates to the Privacy Policy</h2>
+            <p>Any changes to this Privacy Policy will be communicated through a pop-up notification in the app and a
+                banner on the website.</p>
+            <br>
+            <h2>Contact Us</h2>
+            <p>If you have any questions or concerns about this Privacy Policy, please feel free to contact us via email
+                at <strong>learngupt@gmail.com</strong>.</p>
+        </div>
+    </div>
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeTermsBtn">&times;</span>
+            <!-- Insert your Terms and Conditions content here -->
+            <h1>Terms and Conditions</h1><br>
+            <p><strong>Effective Date:</strong> November 25, 2024</p>
+            <br>
+            <p>Welcome to LearnGupt! By using our app, you agree to these Terms and Conditions. Please read them
+                carefully.</p>
+            <br>
+            <h2>1. Use of the App</h2>
+            <p>LearnGupt is a WebView app that essentially displays the content from our website in an app format. The
+                app is designed to track user progress and provide learning materials. The app is free to use and
+                operates on Android devices via the Google Play Store. By using LearnGupt, you confirm you are at least
+                13 years old or have parental/guardian permission.</p>
+            <br>
+            <h2>2. User Responsibilities</h2>
+            <p>Your progress is saved locally on your device. You are responsible for managing and backing up your data
+                if needed. You agree not to misuse the app, reverse-engineer it, or use it for any illegal purposes.</p>
+            <br>
+            <h2>3. Intellectual Property</h2>
+            <p>All content within LearnGupt, including text, design, and functionality, is owned by LearnGupt, unless
+                stated otherwise. The icons used in the app are sourced from Flaticon and FontAwesome, and are used with
+                proper attribution as required by their respective licenses. These icons remain the intellectual
+                property of their creators. Reproducing or redistributing any part of the app, including icons or fonts,
+                without permission is strictly prohibited.</p>
+            <br>
+            <h2>8. Accuracy and Updates of Content</h2>
+            <p>While we strive to provide accurate and up-to-date content, LearnGupt does not guarantee that all
+                information within the app is always accurate, complete, or current. The content may be subject to
+                change, and we are not responsible for any inaccuracies or outdated information. Users are encouraged to
+                verify any critical information independently.</p>
+            <br>
+            <h2>4. Limitation of Liability</h2>
+            <p>LearnGupt is provided "as is," and we are not liable for:
+            <p>1. Data loss due to clearing app storage or uninstalling the app.</p>
+            <p>2. Any issues caused by third-party platforms (e.g., Google Play Store).</p>
+            </p>
+            <br>
+            <h2>5. Updates to the App</h2>
+            <p>LearnGupt may update its features or terms without prior notice. Any significant changes will be
+                communicated through a pop-up message.</p>
+            <br>
+            <h2>6. Governing Law</h2>
+            <p>These terms are governed by the laws of India. Any disputes will be resolved in accordance with Indian
+                jurisdiction.</p>
+            <br>
+            <h2>7. Contact Us</h2>
+            <p>If you have questions about these Terms and Conditions, reach out to us at:
+                <strong>Email:</strong> learngupt@gmail.com
+            </p>
+            <br>
+            <p>By using LearnGupt, you agree to these Terms and Conditions.</p>
+        </div>
+    </div>
+    <!-- Credits Modal -->
+    <div id="creditsModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close" id="closeCreditsBtn">&times;</span>
+            <!-- Insert your Credits content here -->
+            <h1>Credits</h1><br>
+            <p> <strong>Developer:</strong> Ashish Gupta</p>
+            <h3>Icons attributes:</h3>
+            <ul style="list-style-type: none; padding: 0;">
+                <!-- Freepik -->
+                <li><a href="https://www.flaticon.com/free-icons/microscope" title="microscope icons">Microscope icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/chemistry" title="chemistry icons">Chemistry icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/physics" title="physics icons">Physics icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/maths" title="maths icons">Maths icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/globe" title="globe icons">Globe icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/history" title="history icons">History icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/economic" title="economic icons">Economic icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/hindi" title="hindi icons">Hindi icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/sanskrit" title="sanskrit icons">Sanskrit icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/quiz" title="quiz icons">Quiz icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/prioritize" title="prioritize icons">Prioritize icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/solution" title="solution icons">Solution icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/notes" title="notes icons">Notes icons created by Freepik - Flaticon</a></li>
+                <li><a href="https://www.flaticon.com/free-icons/contact-us" title="contact-us icons">Contact-us icons created by Freepik - Flaticon</a></li>
+            
+                <!-- Iconic Panda -->
+                <li><a href="https://www.flaticon.com/free-icons/political" title="political icons">Political icons created by Iconic Panda - Flaticon</a></li>
+            
+                <!-- Amoghdesign -->
+                <li><a href="https://www.flaticon.com/free-icons/english" title="english icons">English icons created by amoghdesign - Flaticon</a></li>
+            
+                <!-- Mikan933 -->
+                <li><a href="https://www.flaticon.com/free-icons/book" title="book icons">Book icons created by mikan933 - Flaticon</a></li>
+            </ul>
+            <br>
+            <strong>Special Thanks:</strong> To all beta testers and supporters!
+        </div>
+    </div>
+
+    <!-- Script for handling settings -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const currentBoardClass = document.getElementById('current-board-class');
+            const changeBoardClassBtn = document.getElementById('changeBoardClassBtn');
+            const backBtn = document.getElementById('backBtn');
+
+            // Retrieve current board and class
+            const board = localStorage.getItem('selectedBoard');
+            const userClass = localStorage.getItem('selectedClass');
+
+            // Format board and class for display
+            const formattedBoard = board === 'ncert' ? 'NCERT' : board === 'bihar_board' ? 'Bihar Board' : 'Not set';
+            const formattedClass = userClass ? `Class ${userClass}` : 'No class selected';
+
+            // Display formatted board and class
+            currentBoardClass.textContent = `${formattedBoard}, ${formattedClass}`;
+
+            // Change board & class button action
+            changeBoardClassBtn.addEventListener('click', function () {
+                window.location.href = 'index.html?from=settings';
+            });
+
+            // Back button redirects to home.html with the selected board and class
+            backBtn.addEventListener('click', function () {
+                const board = localStorage.getItem('selectedBoard') || 'Not set';
+                const userClass = localStorage.getItem('selectedClass') || 'No class selected';
+                window.location.href = `home.html?board=${board}&class=${userClass}`;
+            });
+        });
+    </script>
+    <!-- ripple effect script -->
+    <script>
+        document.querySelectorAll('.ripple-target').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const diameter = Math.max(this.clientWidth, this.clientHeight);
+                const radius = diameter / 2;
+
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${e.clientX - this.getBoundingClientRect().left - radius}px`;
+                ripple.style.top = `${e.clientY - this.getBoundingClientRect().top - radius}px`;
+                ripple.classList.add('ripple');
+
+                // Remove previous ripple effect if exists
+                const existingRipple = this.querySelector('.ripple');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+
+                // Add new ripple
+                this.appendChild(ripple);
+
+                // Apply animation
+                ripple.style.animation = 'ripple-animation 600ms linear';
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+    <!-- modal privacy -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const privacyPolicyBtn = document.getElementById('privacyPolicyBtn');
+            const modal = document.getElementById("privacyModal");
+            const closeBtn = document.getElementById("closeBtn");
+
+            // Open Privacy Policy Modal
+            privacyPolicyBtn.addEventListener('click', function () {
+                modal.style.display = "block";
+            });
+
+            // Close Privacy Policy Modal
+            closeBtn.onclick = function () {
+                modal.style.display = "none";
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        });
+
+    </script>
+    <!-- terms and conditions modal -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const termsConditionsBtn = document.getElementById('termsConditionsBtn');
+            const termsModal = document.getElementById("termsModal");
+            const closeTermsBtn = document.getElementById("closeTermsBtn");
+
+            // Open Terms and Conditions Modal
+            termsConditionsBtn.addEventListener('click', function () {
+                termsModal.style.display = "block";
+            });
+
+            // Close Terms and Conditions Modal
+            closeTermsBtn.onclick = function () {
+                termsModal.style.display = "none";
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                if (event.target == termsModal) {
+                    termsModal.style.display = "none";
+                }
+            }
+        });
+
+    </script>
+    <!-- credits modal -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const creditsBtn = document.getElementById('creditsBtn');
+            const creditsModal = document.getElementById("creditsModal");
+            const closeCreditsBtn = document.getElementById("closeCreditsBtn");
+
+            // Open Credits Modal
+            creditsBtn.addEventListener('click', function () {
+                creditsModal.style.display = "block";
+            });
+
+            // Close Credits Modal
+            closeCreditsBtn.onclick = function () {
+                creditsModal.style.display = "none";
+            }
+
+            // Close modal when clicking outside
+            window.onclick = function (event) {
+                if (event.target == creditsModal) {
+                    creditsModal.style.display = "none";
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

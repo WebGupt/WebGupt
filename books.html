@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Books</title>
+    <style>
+        /* General Styles */
+        body {
+            padding-top: 110px !important;
+        }
+
+        .title h2 {
+            font-size: 1.8rem;
+        }
+
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+        }
+
+        .content {
+            padding-top: 10px !important;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+
+        /* Book Container Styles */
+        .book-container {
+            padding: 16px;
+            margin: 0px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .book-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #292929;
+            border-radius: 8px;
+            border: 1px solid #292929;
+        }
+
+        .book-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 40px;
+        }
+
+        .download-button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-style: none;
+        }
+
+        .download-button:hover {
+            background-color: #555;
+        }
+
+        /* Ripple Effect Styles */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            transform: scale(0);
+            animation: ripple-animation 600ms linear;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with back button and 'Books' title -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Books</h2>
+        </div>
+    </nav>
+
+    <!-- Main Content: Books List -->
+    <section class="book-container" id="bookContainer">
+        <!-- Books will be populated dynamically here -->
+    </section>
+    <div class="download-folder-message" style="text-align: center; margin: 12px;">
+    <h3>The book PDF will be downloaded in "LearnGupt Books" folder in your device.</h3>
+</div>
+    <script>
+        // Function to get URL parameters
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Get URL parameters
+        const board = getUrlParam('board');
+        const userClass = getUrlParam('class');
+        const subject = getUrlParam('subject');
+        const chapter = getUrlParam('chapter');
+        const type = getUrlParam('type');
+        const page = getUrlParam('page'); // Get the page parameter for back navigation
+
+        // Function to format URL for PDF
+        function formatPdfUrl(board, userClass, subject, chapter) {
+            return `Contents/Books%20pdf/${board}_${userClass}_${subject}_${chapter}.pdf`;
+        }
+
+        // Function to handle back button
+        function goBack() {
+            window.location.href = page || `chapter.html?board=${board}&class=${userClass}&subject=${subject}&type=${type}&page=${encodeURIComponent(window.location.href)}`;
+        }
+
+        // Function to load books
+        function loadBooks() {
+            const pdfUrl = formatPdfUrl(board, userClass, subject, chapter);
+            const bookContainer = document.getElementById('bookContainer');
+            
+            // Create a book section with download button
+            const bookSection = document.createElement('div');
+            bookSection.className = 'book-section';
+            bookSection.innerHTML = `
+                <div class="book-title">${board} ${userClass} ${subject} ${chapter}</div>
+                <button class="download-button ripple-target" onclick="downloadPdf('${pdfUrl}')">Download PDF</button>
+            `;
+            bookContainer.appendChild(bookSection);
+        }
+
+        // Function to force PDF download with real filename
+        function downloadPdf(pdfUrl) {
+            // Extract the actual filename from the URL
+            const fileName = pdfUrl.substring(pdfUrl.lastIndexOf('/') + 1);
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.setAttribute('download', fileName); // Set the filename for download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Load books when the page loads
+        loadBooks();
+    </script>
+
+    <!-- Ripple effect script -->
+    <script>
+        document.addEventListener('click', function (e) {
+            const target = e.target.closest('.ripple-target');
+            if (!target) return;
+
+            const ripple = document.createElement('span');
+            const diameter = Math.max(target.clientWidth, target.clientHeight);
+            const radius = diameter / 2;
+
+            ripple.style.width = ripple.style.height = `${diameter}px`;
+            ripple.style.left = `${e.clientX - target.getBoundingClientRect().left - radius}px`;
+            ripple.style.top = `${e.clientY - target.getBoundingClientRect().top - radius}px`;
+            ripple.classList.add('ripple');
+
+            // Remove existing ripple if any
+            const existingRipple = target.querySelector('.ripple');
+            if (existingRipple) {
+                existingRipple.remove();
+            }
+
+            target.appendChild(ripple);
+        });
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

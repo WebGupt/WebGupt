@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="carousel.css">
+    <title>Custom Carousel</title>
+</head>
+<body>
+
+    <div class="carousel-container">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="img/mcqs.png" alt="MCQs">
+                <div class="carousel-caption">
+                    <h5>MCQs</h5>
+                    <p>Practice multiple choice questions to test your knowledge.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/solutions.png" alt="Solutions">
+                <div class="carousel-caption">
+                    <h5>Solutions</h5>
+                    <p>Get detailed solutions for all your queries.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/quiz.png" alt="Quiz">
+                <div class="carousel-caption">
+                    <h5>Quiz</h5>
+                    <p>Test yourself with interactive quizzes.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/notes.png" alt="Notes">
+                <div class="carousel-caption">
+                    <h5>Notes</h5>
+                    <p>Comprehensive notes to aid your learning.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/books.png" alt="Books">
+                <div class="carousel-caption">
+                    <h5>Books</h5>
+                    <p>Access a wide variety of educational books.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls
+        <div class="carousel-control-prev" onclick="prevSlide()">&#10094;</div>
+        <div class="carousel-control-next" onclick="nextSlide()">&#10095;</div> -->
+
+        <!-- Indicators -->
+        <ul class="carousel-indicators">
+            <li class="active" onclick="goToSlide(0)"></li>
+            <li onclick="goToSlide(1)"></li>
+            <li onclick="goToSlide(2)"></li>
+            <li onclick="goToSlide(3)"></li>
+            <li onclick="goToSlide(4)"></li>
+        </ul>
+    </div>
+
+    <script src="carousel.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>WebGupt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .content{
+            margin-bottom: 80px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="logo-icon">
+            <img src="img/logo.png" alt="App Logo">
+        </div>
+        <div class="title">
+            <h2>LearnGupt <br /><span id="className"></span></h2>
+        </div>
+        
+    </nav>
+<div class="homeicon">
+    <div class="scores icon-wrapper">
+            <a href="total_scores.html">
+            <i class="fa-solid fa-star"></i>
+        </a>
+        </div>
+        <div class="settings icon-wrapper" onclick="window.location.href='settings.html';">
+            <i class="fa-solid fa-gear"></i>
+        </div>
+</div>
+    <!-- Main Content -->
+    <section class="content">
+        <a id="mcqsLink" href="#">
+            <div class="box">
+                <img src="img/mcqs.png" alt="MCQs">
+                <h3>MCQs</h3>
+            </div>
+        </a>
+        <a id="solutionsLink" href="#">
+            <div class="box">
+                <img src="img/solutions.png" alt="Solutions">
+                <h3>Solutions</h3>
+            </div>
+        </a>
+        <a id="quizLink" href="#">
+            <div class="box">
+                <img src="img/quiz.png" alt="Quiz">
+                <h3>Quiz</h3>
+            </div>
+        </a>
+        <a id="notesLink" href="#">
+            <div class="box">
+                <img src="img/notes.png" alt="Notes" style="margin-right: 12px;">
+                <h3>Notes</h3>
+            </div>
+        </a>
+        <a id="booksLink" href="#">
+            <div class="box">
+                <img src="img/books.png" alt="Books">
+                <h3>Books</h3>
+            </div>
+        </a>
+        <a href="mailto:contact@learngupt.com?subject=Contact%20Us&body=Hi%20there!">
+            <div class="box">
+                <img src="img/contact-icon.png" alt="Contact">
+                <h3>Contact</h3>
+            </div>
+        </a>        
+    </section>
+
+    <!-- Bottom Navbar -->
+    <div id="bottom-navbar"></div> <!-- Placeholder for the navbar -->
+
+    <!-- Script for handling navbar and dynamic class name -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const board = urlParams.get('board') || localStorage.getItem('selectedBoard');
+            const userClass = urlParams.get('class') || localStorage.getItem('selectedClass') || 'No class selected';
+
+            if (board && userClass) {
+                localStorage.setItem('selectedBoard', board);
+                localStorage.setItem('selectedClass', userClass);
+
+                // Update the class name in the title
+                document.getElementById('className').innerText = `Class ${userClass}`;
+
+                // Update links with the board and class parameters
+                document.getElementById('mcqsLink').href = `subject.html?board=${board}&class=${userClass}&type=mcqs`;
+                document.getElementById('solutionsLink').href = `subject.html?board=${board}&class=${userClass}&type=solutions`;
+                document.getElementById('quizLink').href = `subject.html?board=${board}&class=${userClass}&type=quiz`;
+                document.getElementById('notesLink').href = `subject.html?board=${board}&class=${userClass}&type=notes`;
+                document.getElementById('booksLink').href = `subject.html?board=${board}&class=${userClass}&type=books`;
+            } else {
+                // Redirect to index.html if no board and class are set
+                window.location.href = 'index.html';
+            }
+        });
+
+    </script>
+
+    <!-- Script for handling the bottom navbar -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

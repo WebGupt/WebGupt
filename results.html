@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Styles */
+        body {
+            padding-top: 110px !important;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+            /* background-color: #1a1a1a; */
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .content {
+            padding-top: 10px !important;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+
+        .title h2 {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .results-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .question-box {
+            background-color: #222;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            /* Allow positioning of the label */
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin: 10px 0 5px;
+            /* Adjust margins */
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option {
+            background-color: #444;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .correct {
+            background-color: #43d156;
+            /* Green for correct answer */
+        }
+
+        .selected {
+            background-color: #ff3838;
+            /* Red for selected wrong answer */
+        }
+
+        .unsolved {
+            background-color: #f3c94c;
+            /* Yellow for unsolved */
+            color: #000;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1rem;
+            /* Adjust font size if needed */
+            margin-bottom: 10px;
+            /* Space below the unsolved label */
+        }
+
+        .score {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .star-icon {
+            color: gold;
+            margin-left: 5px;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin: 20px;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-button:hover {
+            background-color: #555;
+        }
+
+        .score-container {
+            margin-bottom: 20px;
+            background-color: #3a3a3a;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px;
+            padding-top: 4px;
+        }
+
+        @media (max-width:380px) {
+            .nav-button {
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with back button and 'Results' title -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Results</h2>
+        </div>
+    </nav>
+
+    <!-- Scores and Navigation Buttons -->
+    <div class="score-container" id="scoreContainer">
+        <!-- Scores will be dynamically populated here -->
+    </div>
+
+    <div class="navigation-buttons">
+        <button class="nav-button" id="resetButton" onclick="resetQuiz()">Retake Quiz</button>
+        <button class="nav-button" onclick="goBack()">Go Back to Quizzes</button>
+    </div>
+
+    <!-- Results Display Section -->
+    <section class="results-container" id="resultsContainer">
+        <!-- Results will be dynamically populated here -->
+    </section>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Get URL parameters
+        const board = getUrlParam('board');
+        const userClass = getUrlParam('class');
+        const subject = getUrlParam('subject');
+        const chapter = getUrlParam('chapter');
+        const type = getUrlParam('type');
+        const test = getUrlParam('test');
+
+        // Function to handle back button
+        function goBack() {
+            window.location.href = `quiz.html?board=${board}&class=${userClass}&subject=${subject}&chapter=${chapter}&test=${test}&type=${type}`;
+        }
+
+        // Function to reset the quiz
+        function resetQuiz() {
+            const completionKey = `quiz_completed_${board}_${userClass}_${subject}_${chapter}_${test}`;
+            const responsesKey = `quiz_responses_${board}_${userClass}_${subject}_${chapter}_${test}`;
+
+            // Remove completion status and responses for this quiz
+            localStorage.removeItem(completionKey);
+            localStorage.removeItem(responsesKey);
+
+            // Remove the stored score for this quiz (subject, chapter, test)
+            let scores = JSON.parse(localStorage.getItem('quiz_scores')) || [];
+            scores = scores.filter(score =>
+                !(score.subject === subject && score.chapter === chapter && score.test === test)
+            );
+
+            // Update the localStorage with the remaining scores
+            localStorage.setItem('quiz_scores', JSON.stringify(scores));
+
+            // Redirect to the quiz page for a fresh start
+            window.location.href = `quizzes.html?board=${board}&class=${userClass}&subject=${subject}&chapter=${chapter}&test=${test}&type=${type}`;
+        }
+
+        // Variables to store quiz data and user responses
+        let quizData = [];
+        let userResponses = {};
+
+        // Load quiz data and results
+        function loadResults() {
+            const csvUrl = formatCsvUrl('quiz', board, userClass, subject, chapter, test);
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvData => {
+                    parseCSV(csvData);
+                    displayResults();
+                })
+                .catch(error => console.error('Error loading quiz:', error));
+
+            const key = `quiz_completed_${board}_${userClass}_${subject}_${chapter}_${test}`;
+            localStorage.setItem(key, 'true');
+        }
+
+        // Parse CSV data into quizData array (Updated)
+function parseCSV(csvData) {
+    const rows = csvData.trim().split('\n');
+    rows.forEach((row, index) => {
+        const values = parseCSVLine(row);
+
+        if (values.length === 6) { // Ensure there are exactly 6 fields
+            const [question, optionA, optionB, optionC, optionD, correctOption] = values;
+
+            quizData.push({
+                question: question, // Already cleaned in parseCSVLine
+                options: {
+                    a: optionA,
+                    b: optionB,
+                    c: optionC,
+                    d: optionD
+                },
+                correctOption: correctOption.toLowerCase()
+            });
+        }
+    });
+
+    const key = `quiz_responses_${board}_${userClass}_${subject}_${chapter}_${test}`;
+    const responses = localStorage.getItem(key);
+    userResponses = responses ? JSON.parse(responses) : {};
+}
+
+// Helper function to parse a single CSV line (Advanced parsing logic)
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
+            inQuotes = !inQuotes;
+            continue; // Skip the quote character
+        }
+
+        if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    // Push the last field
+    result.push(current.trim());
+
+    // Remove surrounding quotes and replace double quotes with single quotes
+    return result.map(field => {
+        if (field.startsWith('"') && field.endsWith('"')) {
+            // Remove the surrounding quotes
+            field = field.slice(1, -1);
+            // Replace double quotes with single quotes
+            field = field.replace(/""/g, '"');
+        }
+        return field;
+    });
+}
+
+// Load quiz data and results
+function loadResults() {
+    const csvUrl = formatCsvUrl('quiz', board, userClass, subject, chapter, test);
+    fetch(csvUrl)
+        .then(response => response.text())
+        .then(csvData => {
+            parseCSV(csvData); // Updated function
+            displayResults();
+        })
+        .catch(error => console.error('Error loading quiz:', error));
+
+    const key = `quiz_completed_${board}_${userClass}_${subject}_${chapter}_${test}`;
+    localStorage.setItem(key, 'true');
+}
+
+
+        // Format URL for CSV
+        function formatCsvUrl(type, board, userClass, subject, chapter, test) {
+            return `Contents/Quizzes/${type.toLowerCase()}_${board}_${userClass}_${subject}_${chapter}_${test}.csv`;
+        }
+
+        // Display the results
+        function displayResults() {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const scoreContainer = document.getElementById('scoreContainer');
+            let correctCount = 0;
+            const totalQuestions = quizData.length;
+
+            quizData.forEach((quiz, index) => {
+                const userAnswer = userResponses[index];
+
+                let optionsHTML = '';
+                let unsolvedLabel = '';
+
+                if (userAnswer === undefined) {
+                    unsolvedLabel = '<div class="unsolved">Not Solved</div>';
+                }
+
+                for (const [key, value] of Object.entries(quiz.options)) {
+                    let optionClass = '';
+
+                    if (userAnswer === quiz.correctOption) {
+                        if (key === quiz.correctOption) {
+                            optionClass = 'correct';
+                        }
+                    } else {
+                        if (key === userAnswer) {
+                            optionClass = 'selected';
+                        }
+                        if (key === quiz.correctOption) {
+                            optionClass = 'correct';
+                        }
+                    }
+
+                    optionsHTML += `<div class="option ${optionClass}">${value}</div>`;
+                }
+
+                const questionHTML = `
+            <div class="question-box">
+                ${unsolvedLabel}
+                <div class="question">Question ${index + 1}: ${quiz.question}</div>
+                <div class="options">
+                    ${optionsHTML}
+                </div>
+            </div>
+        `;
+
+                resultsContainer.innerHTML += questionHTML;
+
+                if (userAnswer === quiz.correctOption) {
+                    correctCount++;
+                }
+            });
+
+            const scoreRightTotal = `${correctCount}/${totalQuestions}`;
+            const percentageRight = ((correctCount / totalQuestions) * 100).toFixed(2);
+
+            // Display scores
+            scoreContainer.innerHTML = `
+        <div class="score">Right: ${scoreRightTotal}</div>
+        <div class="score">Percentage Right: ${percentageRight}%</div>
+    `;
+
+            // Update and store the score in localStorage
+            storeScore(board, userClass, subject, chapter, test, totalQuestions, correctCount);
+        }
+
+        // Function to store the score in local storage in table format
+        function storeScore(board, userClass, subject, chapter, test, totalQuestions, correctCount) {
+            // Retrieve the current stored scores or initialize an empty array
+            let scores = JSON.parse(localStorage.getItem('quiz_scores')) || [];
+
+            // Check if there's already an entry for this board, class, subject, chapter, and test
+            const existingScoreIndex = scores.findIndex(score =>
+                score.board === board && score.class === userClass && score.subject === subject && score.chapter === chapter && score.test === test
+            );
+
+            if (existingScoreIndex > -1) {
+                // Update the existing score
+                scores[existingScoreIndex] = {
+                    board: board,
+                    class: userClass,
+                    subject: subject,
+                    chapter: chapter,
+                    test: test,
+                    totalQuestions: totalQuestions,
+                    correctCount: correctCount
+                };
+            } else {
+                // Add a new entry for the current quiz
+                scores.push({
+                    board: board,
+                    class: userClass,
+                    subject: subject,
+                    chapter: chapter,
+                    test: test,
+                    totalQuestions: totalQuestions,
+                    correctCount: correctCount
+                });
+            }
+
+            // Save the updated scores back to localStorage
+            localStorage.setItem('quiz_scores', JSON.stringify(scores));
+        }
+
+        // Load results on page load
+        window.onload = loadResults;
+
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

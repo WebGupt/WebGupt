@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Quiz Listing</title>
+    <style>
+        body {
+            padding-top: 110px !important;
+        }
+
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+        }
+
+        .content {
+            padding-top: 10px !important;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+
+        .title h2 {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .quiz-container {
+            padding: 16px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .quiz-section {
+            margin-bottom: 20px;
+            padding: 0px;
+            background-color: #444;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .quiz-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+
+        .quiz-button:hover {
+            background-color: #555;
+        }
+
+        .quiz-button:active {
+            background-color: #adadad;
+            color: #ffffff;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .completed {
+            background-color: #49be4d;
+            /* Green for completed */
+        }
+
+        .status {
+            margin-top: 10px;
+            color: #ffd900;
+            /* Gold color for completed status */
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with back button and 'Quiz Listing' title -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Quizzes</h2>
+        </div>
+    </nav>
+
+    <!-- Main Content: Quiz List -->
+    <section class="quiz-container" id="quizContainer">
+        <!-- Quiz sections will be dynamically populated here -->
+    </section>
+
+    <!-- quiz.html -->
+    <script>
+        // Function to get URL parameters
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const board = urlParams.get('board');
+        const userClass = urlParams.get('class');
+        const subject = urlParams.get('subject');
+        const chapter = urlParams.get('chapter');
+        const type = urlParams.get('type'); // Get the type parameter
+        const page = urlParams.get('page');
+
+        // Function to handle back button
+        function goBack() {
+            window.location.href = page || `chapter.html?board=${board}&class=${userClass}&subject=${subject}&type=${type}`;
+        }
+
+        function navigateToQuiz(test) {
+            const currentUrl = window.location.href;
+            const key = `quiz_responses_${board}_${userClass}_${subject}_${chapter}_${test}`;
+            const completed = localStorage.getItem(`quiz_completed_${board}_${userClass}_${subject}_${chapter}_${test}`) === 'true';
+
+            if (completed) {
+                window.location.href = `results.html?board=${board}&class=${userClass}&subject=${subject}&chapter=${chapter}&test=${test}&type=${type}&page=${encodeURIComponent(currentUrl)}`;
+            } else {
+                window.location.href = `quizzes.html?board=${board}&class=${userClass}&subject=${subject}&chapter=${chapter}&test=${test}&type=${type}&page=${encodeURIComponent(currentUrl)}`;
+            }
+        }
+
+        // Function to load quiz sections
+        function loadQuizzes() {
+    const quizContainer = document.getElementById('quizContainer');
+    const tests = ['test1', 'test2', 'test3']; // Array of tests
+
+    tests.forEach(test => {
+        const key = `quiz_completed_${board}_${userClass}_${subject}_${chapter}_${test}`;
+        const completed = localStorage.getItem(key) === 'true'; // Now check the 'completed' status from results.html
+
+        const quizSection = document.createElement('div');
+        quizSection.classList.add('quiz-section');
+
+        const quizButton = document.createElement('button');
+        quizButton.classList.add('quiz-button');
+        quizButton.textContent = `Quiz ${test.charAt(4).toUpperCase() + test.slice(5)}`; // Capitalize Test 1, Test 2, etc.
+        quizButton.onclick = () => navigateToQuiz(test);
+
+        if (completed) {
+            quizButton.classList.add('completed');
+            quizButton.innerHTML += ' <span class="status">(Completed)</span>'; // Add completed status
+        }
+
+        quizSection.appendChild(quizButton);
+        quizContainer.appendChild(quizSection);
+    });
+}
+
+
+        // Load quizzes when the page loads
+        window.onload = loadQuizzes;
+    </script>
+
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>

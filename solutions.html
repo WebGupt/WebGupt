@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Formatted Text - Solutions</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.46;
+            margin: 0;
+            font-size: 1.3rem;
+            padding: 0;
+        }
+        .navbar {
+            position: relative;
+        }
+        #content {
+            white-space: pre-line;
+            margin: 20px;
+            margin-top: 40px;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for background and text color */
+        }
+        b {
+            line-height: 1;
+        }
+        p {
+            margin: 0;
+            padding: 0;
+        }
+        br {
+            line-height: .4;
+        }
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+        }
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+        body.light-mode {
+            background-color: white; /* Light background */
+            color: grey; /* Light text color */
+        }
+        body.light-mode #content {
+            color: rgb(49, 49, 49); /* Content text color in light mode */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Solutions</h2>
+        </div>
+        <div class="mode-toggle" onclick="toggleMode();">
+            <i class="fa-solid" id="mode-icon"></i>
+        </div>
+    </nav>
+
+    <div id="content"></div>
+
+    <script>
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        const board = getUrlParam('board');
+        const userClass = getUrlParam('class');
+        const subject = getUrlParam('subject');
+        const chapter = getUrlParam('chapter');
+        const type = getUrlParam('type');
+        const page = getUrlParam('page');
+
+        function formatTxtUrl(type, board, userClass, subject, chapter) {
+            return `Contents/Solutions/${type.toLowerCase()}_${board}_${userClass}_${subject}_${chapter}.txt`;
+        }
+
+        function goBack() {
+            window.location.href = page || `chapter.html?board=${board}&class=${userClass}&subject=${subject}&type=${type}&page=${encodeURIComponent(window.location.href)}`;
+        }
+
+        function loadContent() {
+            const txtUrl = formatTxtUrl('solutions', board, userClass, subject, chapter);
+            fetch(txtUrl)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('content').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading content:', error));
+        }
+
+        function toggleMode() {
+            const icon = document.getElementById('mode-icon');
+            document.body.classList.toggle('light-mode'); // Switch to light mode
+
+            // Change the icon based on the current mode
+            if (document.body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-sun');  // Remove sun icon
+                icon.classList.add('fa-moon');     // Add moon icon
+            } else {
+                icon.classList.remove('fa-moon');  // Remove moon icon
+                icon.classList.add('fa-sun');       // Add sun icon
+            }
+        }
+
+        // Ensure the body starts in dark mode
+        if (!document.body.classList.contains('light-mode')) {
+            document.body.classList.add('dark-mode'); // Optional, based on your styles
+            document.getElementById('mode-icon').classList.add('fa-sun'); // Default icon
+        }
+
+        loadContent();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

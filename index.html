@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="carousel.css">
+    <title>GLearn - Select Board and Class</title>
+    <script>
+        function lockOrientation() {
+            if (window.screen.orientation && window.screen.orientation.lock) {
+                window.screen.orientation.lock('portrait')
+                    .catch(function (error) {
+                        console.log("Orientation lock failed: ", error);
+                    });
+            }
+        }
+
+        lockOrientation();
+    </script>
+
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        /* Main content area */
+        .content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Bottom navbar */
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 1px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            gap: 10px;
+            padding-top: 27px;
+            padding-bottom: 30px;
+        }
+
+        .navbar .dropdown {
+            position: relative;
+            width: 90%;
+            max-width: 420px;
+        }
+
+        .navbar .dropdown-button {
+            padding: 10px;
+            font-size: 1.2rem;
+            background-color: #fff;
+            color: rgb(44, 44, 44);
+            border-radius: 37px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            /* Center text */
+            width: 100%;
+            position: relative;
+            font-weight: 660;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Center contents */
+        }
+
+        .navbar .dropdown-button i,
+        .navbar .dropdown-button img {
+            margin-right: 10px;
+            /* Space between icon and text */
+        }
+
+        .navbar .dropdown-button:focus {
+            background-color: #ececec;
+        }
+
+        .navbar .dropdown-menu {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .navbar .dropdown-menu div {
+            padding: 10px;
+            cursor: pointer;
+            color: black;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Center contents */
+        }
+
+        .navbar .dropdown-menu div:hover {
+            background-color: #ececec;
+            border-radius: 12px;
+        }
+
+        .navbar .dropdown-menu div img,
+        .navbar .dropdown-menu div i {
+            margin-right: 8px;
+        }
+
+
+        .navbar .dropdown-menu.show {
+            display: block;
+        }
+
+        .navbar button {
+            padding: 8px;
+            font-size: 16px;
+            background-color: #43d156;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 95%;
+            max-width: 420px;
+        }
+
+        #goBtn {
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        #alertBox {
+            display: none;
+            color: rgb(247, 91, 91);
+            margin-bottom: -2px;
+            font-weight: 600;
+        }
+
+        #carousel-placeholder {
+            margin-bottom: 200px;
+        }
+
+        /* ripple effect css */
+
+        .ripple-target {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-target .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            pointer-events: none;
+            z-index: 1;
+            /* Ensures ripple appears above content */
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                /* Adjust scaling as needed */
+                opacity: 0;
+            }
+        }
+
+        /* Removes blue highlight on clickable elements */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            /* Prevents text selection */
+            user-select: none;
+            /* Prevents text selection for non-webkit browsers */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main content -->
+    <div id="carousel-placeholder"></div>
+    <!-- Bottom navbar -->
+    <div class="navbar">
+        <p id="alertBox">Please Select Both!</p>
+
+        <!-- Dropdown for choosing board -->
+        <div class="dropdown ">
+            <button class="dropdown-button ripple-target" id="boardButton">
+                <i class="fa-solid fa-school"></i> <!-- Icon for board -->
+                <span>Select your board</span>
+            </button>
+            <div class="dropdown-menu" id="boardMenu">
+                <div data-value="">
+                    <i class="fa-solid fa-school"></i> <!-- Icon for board -->
+                    <span>Select your board</span>
+                </div>
+                <!-- <div data-value="ncert">
+                    <img src="img/ncert.png" alt="NCERT" width="20"> <span>NCERT</span>
+                </div> -->
+                <div data-value="bihar_board">
+                    <!-- <img src="img/bihar board.png" alt="Bihar Board" width="20">  -->
+                     <span>Bihar Board</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown for choosing class -->
+        <div class="dropdown">
+            <button class="dropdown-button ripple-target" id="classButton">
+                <i class="fa-solid fa-graduation-cap"></i> <!-- Icon for class -->
+                <span>Select your class</span>
+            </button>
+            <div class="dropdown-menu" id="classMenu">
+                <div data-value="">
+                    <i class="fa-solid fa-graduation-cap"></i> <!-- Icon for class -->
+                    <span>Select your class</span>
+                </div>
+                <!-- <div data-value="9">
+                    <span>Class 9</span>
+                </div> -->
+                <div data-value="10">
+                    <span>Class 10</span>
+                </div>
+            </div>
+        </div>
+
+        <hr style="width: 90%; max-width: 420px; background-color: #ffffff; opacity: 0.7;">
+
+        <!-- Let's Go button -->
+        <button type="button" class="ripple-target" id="goBtn">Let's Go</button>
+    </div>
+
+    <!-- JavaScript code for dropdown and button functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromSettings = urlParams.get('from'); // Check if coming from settings
+
+            // Get board and class from localStorage
+            const storedBoard = localStorage.getItem('board');
+            const storedClass = localStorage.getItem('class');
+
+            if (storedBoard && storedClass && !fromSettings) {
+                // If board and class are already set and not coming from settings, redirect to home.html
+                window.location.href = `home.html?board=${storedBoard}&class=${storedClass}`;
+            }
+
+            // Pre-select board and class if available
+            if (storedBoard) {
+                document.getElementById('boardButton').innerHTML = `<i class="fa-solid fa-school"></i> ${getBoardText(storedBoard)}`;
+                document.getElementById('boardButton').dataset.value = storedBoard;
+            }
+            if (storedClass) {
+                document.getElementById('classButton').innerHTML = `<i class="fa-solid fa-graduation-cap"></i> ${getClassText(storedClass)}`;
+                document.getElementById('classButton').dataset.value = storedClass;
+            }
+
+            // Dropdown button click event
+            document.querySelectorAll('.dropdown-button').forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.stopPropagation();  // Prevents closing the dropdown when clicking inside it
+                    closeAllDropdowns();  // Close other dropdowns first
+                    const menuId = this.id.replace('Button', 'Menu');
+                    document.getElementById(menuId).classList.toggle('show');
+                });
+            });
+
+            // Dropdown menu item click event
+            document.querySelectorAll('.dropdown-menu div').forEach(item => {
+                item.addEventListener('click', function () {
+                    const buttonId = this.parentNode.id.replace('Menu', 'Button');
+                    const button = document.getElementById(buttonId);
+                    button.innerHTML = `${this.querySelector('i') ? this.querySelector('i').outerHTML : ''} ${this.querySelector('span') ? this.querySelector('span').textContent : this.textContent}`;
+                    button.dataset.value = this.dataset.value;
+                    this.parentNode.classList.remove('show');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function () {
+                closeAllDropdowns();
+            });
+
+            // Handle form submission to store the selected board and class
+            document.getElementById('goBtn').addEventListener('click', function () {
+                const board = document.getElementById('boardButton').dataset.value;
+                const classLevel = document.getElementById('classButton').dataset.value;
+
+                if (!board || !classLevel) {
+                    document.getElementById('alertBox').style.display = 'block'; // Show alert if not selected
+                    return;
+                }
+
+                // Store selected values in localStorage and redirect to home.html
+                localStorage.setItem('board', board);
+                localStorage.setItem('class', classLevel);
+                window.location.href = `home.html?board=${board}&class=${classLevel}`;
+            });
+
+            // Helper function to close all dropdowns
+            function closeAllDropdowns() {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+
+            // Helper function to get board text
+            function getBoardText(board) {
+                switch (board) {
+                    case 'ncert':
+                        return 'NCERT';
+                    case 'bihar_board':
+                        return 'Bihar Board';
+                    default:
+                        return 'Select your board';
+                }
+            }
+
+            // Helper function to get class text
+            function getClassText(classLevel) {
+                switch (classLevel) {
+                    case '9':
+                        return 'Class 9';
+                    case '10':
+                        return 'Class 10';
+                    default:
+                        return 'Select your class';
+                }
+            }
+        });
+
+    </script>
+
+    <!-- ripple effect script -->
+    <script>
+        document.querySelectorAll('.ripple-target').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const diameter = Math.max(this.clientWidth, this.clientHeight);
+                const radius = diameter / 2;
+
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${e.clientX - this.getBoundingClientRect().left - radius}px`;
+                ripple.style.top = `${e.clientY - this.getBoundingClientRect().top - radius}px`;
+                ripple.classList.add('ripple');
+
+                // Remove previous ripple effect if exists
+                const existingRipple = this.querySelector('.ripple');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+
+                // Add new ripple
+                this.appendChild(ripple);
+
+                // Apply animation
+                ripple.style.animation = 'ripple-animation 600ms linear';
+            });
+        });
+    </script>
+    <!-- carousel script -->
+    <script src="load-carousel.js"></script>
+</body>
+
+</html>

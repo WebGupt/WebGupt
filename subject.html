@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Using the same stylesheet as home.html -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+       body {
+        padding-top: 110px !important;
+       }
+        .title h2 {
+            font-size: 1.8rem;
+        }
+
+        .navbar {
+            padding-left:10px !important;
+            padding-block: 22px !important;
+        }
+        .spancontainer {
+            display: flex;
+            /* margin-top: -10px; */
+            align-items: center;
+            justify-content: center;
+        }
+        #typeTitle {
+            font-size: 1.6rem;
+            font-weight: 600;
+           
+        }
+        .content {
+            padding-top: 10px !important;
+            margin-bottom: 90px !important;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header with back button and 'Subjects' title -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper"
+            onclick="window.location.href='home.html?board=' + encodeURIComponent(board) + '&class=' + encodeURIComponent(userClass) + '&type=' + encodeURIComponent(type);">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Subjects</h2> <!-- Display the type here -->
+        </div>
+    </nav>
+    <div class="spancontainer">
+        <span id="typeTitle"></span>
+    </div>
+    <!-- Main Content: Subjects List, using the same structure as home.html -->
+    <section class="content" id="subjectContainer">
+        <!-- Subjects will be populated dynamically here -->
+    </section>
+
+    <!-- Bottom Navbar -->
+    <div id="bottom-navbar"></div> <!-- Placeholder for the navbar -->
+
+    <!-- Script for handling navbar and dynamic class name -->
+    <script src="script.js"></script>
+
+    <script>
+        // Get board, class, and type from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const board = urlParams.get('board');
+        const userClass = urlParams.get('class');
+        const type = urlParams.get('type');
+
+        // Function to properly format the type
+        function formatType(type) {
+            if (!type) return '';
+            if (type.toLowerCase() === 'mcqs') {
+                return 'MCQs'; // Special case for 'mcqs'
+            } else {
+                return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase(); // Capitalize first letter for other types
+            }
+        }
+
+        // Set up the back button functionality
+        document.querySelector('.back-button').onclick = function () {
+            window.location.href = `home.html?board=${board}&class=${userClass}&type=${type}`;
+        };
+
+        // Display the formatted type in the title
+        document.getElementById('typeTitle').textContent = formatType(type);
+
+        // Store the type in localStorage
+        localStorage.setItem('selectedType', type);
+
+        // Fetch the subjects from the CSV file
+        fetch(`Subjects/subjects_${board}_${userClass}.csv`)
+            .then(response => response.text())
+            .then(csvData => {
+                const rows = csvData.split('\n');
+                const subjectContainer = document.getElementById('subjectContainer');
+
+                rows.forEach(row => {
+                    const [subject, img] = row.split(',');
+                    if (subject && img) {
+                        const subjectBox = document.createElement('a'); // Use 'a' for consistency with home.html
+                        subjectBox.href = `chapter.html?board=${board}&class=${userClass}&subject=${subject.trim()}&type=${type}`;
+                        subjectBox.innerHTML = `
+                            <div class="box"> <!-- Reuse the 'box' class from home.html -->
+                                <img src="${img.trim()}" alt="${subject.trim()}" style="width: 100px; height: 100px;">
+                                <h3>${subject.trim()}</h3>
+                            </div>
+                        `;
+                        subjectContainer.appendChild(subjectBox);
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading subjects:', error));
+    </script>
+
+</body>
+
+</html>

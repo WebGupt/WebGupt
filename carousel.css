@@ -1,0 +1,120 @@
+body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+   
+}
+
+.carousel-container {
+    position: relative;
+    width: 300px; /* Width of the carousel */
+    height: 300px; /* Height of the carousel */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    overflow: visible;
+    margin-top: -120px;
+}
+
+.carousel-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.carousel-item.active {
+    opacity: 1;
+}
+
+.carousel-item img {
+    width: 180px; /* Icon size */
+    height: 180px;
+}
+
+.carousel-caption {
+    position: fixed;
+    margin-top: 280px;
+    width: 100%;
+    text-align: center;
+}
+
+.carousel-caption h5 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #252525;
+    font-weight: 800;
+}
+
+.carousel-caption p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.carousel-indicators {
+    position: relative;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+    list-style: none;
+    margin-top: 470px;
+}
+
+.carousel-indicators li {
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    border-radius: 50%;
+    background-color: gray;
+    cursor: pointer;
+}
+
+.carousel-indicators li.active {
+    background-color: rgb(80, 211, 54);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}

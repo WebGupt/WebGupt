@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>MCQs</title>
+    <style>
+        /* General Styles */
+        body {
+            padding-top: 110px !important;
+        }
+
+        .title h2 {
+            font-size: 1.8rem;
+
+        }
+
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+            position: absolute;
+
+        }
+
+        .content {
+            padding-top: 10px !important;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+
+        /* MCQ Container Styles */
+        .mcq-container {
+            padding: 16px;
+            margin: 0px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .mcq-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #292929;
+            border-radius: 8px;
+            border: 1px solid #292929;
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .options {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background-color: #555;
+        }
+
+        .option.correct {
+            background-color: rgb(68, 184, 84);
+        }
+
+        .option.incorrect {
+            background-color: #dc3545;
+        }
+
+        .option.selected.correct {
+            background-color: #34ce48;
+        }
+
+        .option.selected.incorrect {
+            background-color: #e04156;
+        }
+
+        /* Dropdown Menu Styles */
+        .dropdown {
+            position: absolute;
+            top: auto;
+            bottom: -20px;
+            /* Position dropdown below */
+            right: 0;
+            background-color: #333;
+            border-radius: 5px;
+            display: none;
+            flex-direction: column;
+            width: 150px;
+        }
+
+
+        .dropdown-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* .dropdown-item:hover {
+            background-color: #555;
+
+        } */
+
+        .dropdown-item:active {
+            background-color: #ffffff46;
+        }
+
+        .dropdown-button i {
+            width: 36px;
+        }
+
+        .confirmation-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #353535;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 70%;
+            width: 400px;
+        }
+
+        .confirmation-popup p {
+            text-align: center;
+        }
+
+        .popup-button-div {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+
+        }
+
+        .confirmation-popup button {
+            border-style: none;
+            background: #43d156;
+            padding-inline: 16px;
+            padding-block: 6px;
+            color: white;
+            border-radius: 4px;
+            margin-inline: 4px;
+            margin-block: 2px;
+            font-size: 0.826rem;
+        }
+
+        /* ripple effect css */
+
+        .ripple-target {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-target .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(190, 189, 189, 0.404);
+            transform: scale(0);
+            pointer-events: none;
+            z-index: 1;
+            /* Ensures ripple appears above content */
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                /* Adjust scaling as needed */
+                opacity: 0;
+            }
+        }
+
+        /* ripple effect css for option */
+        .option {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            /* Smooth transitions for background, color, box-shadow, and transform */
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .option:hover {
+            background-color: #555;
+        }
+
+        .option:active {
+            background-color: #adadad;
+            /* Background color when clicked */
+            color: #ffffff;
+            /* Text color when clicked */
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            /* Inner shadow effect */
+            transform: scale(0.85);
+            /* More noticeable scaling effect */
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            /* Ensures smooth transition */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with back button and 'MCQs' title -->
+    <nav class="navbar">
+        <div class="title">
+            <h2>MCQs</h2>
+        </div>
+        <button class="dropdown-button" onclick="toggleDropdown()">
+            <i class="fa-solid fa-ellipsis-vertical"></i></button>
+        <div class="dropdown">
+            <div class="dropdown-item ripple-target" onclick="showConfirmation()">Reset Solved</div>
+        </div>
+    </nav>
+
+    <!-- Confirmation Popup -->
+    <div class="confirmation-popup" id="confirmationPopup">
+        <p>Are you sure to Reset all solved?</p>
+        <div class="popup-button-div"><button onclick="resetSolvedQuestions()" class="ripple-target">Yes</button>
+            <button onclick="hideConfirmation()" class="ripple-target">No</button>
+        </div>
+    </div>
+
+    <!-- Main Content: MCQs List -->
+    <section class="mcq-container" id="mcqContainer">
+        <!-- MCQs will be populated dynamically here -->
+    </section>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Get URL parameters
+        const board = getUrlParam('board');
+        const userClass = getUrlParam('class');
+        const subject = getUrlParam('subject');
+        const chapter = getUrlParam('chapter');
+        const type = getUrlParam('type');
+        const page = getUrlParam('page'); // Get the page parameter for back navigation
+
+        // Function to format URL for CSV
+        function formatCsvUrl(type, board, userClass, subject, chapter) {
+            return `Contents/MCQs/${type.toLowerCase()}_${board}_${userClass}_${subject}_${chapter}.csv`;
+        }
+
+        // Function to handle back button
+        function goBack() {
+            window.location.href = page || `chapter.html?board=${board}&class=${userClass}&subject=${subject}&type=${type}&page=${encodeURIComponent(window.location.href)}`;
+        }
+
+        // Get solved questions from localStorage
+        function getSolvedQuestions() {
+            const key = `solved_mcqs_${board}_${userClass}_${subject}_${chapter}`;
+            const solved = localStorage.getItem(key);
+            return solved ? JSON.parse(solved) : {};
+        }
+
+        // Save solved question index to localStorage
+        function saveSolvedQuestion(index, selectedOption) {
+            const key = `solved_mcqs_${board}_${userClass}_${subject}_${chapter}`;
+            const solvedQuestions = getSolvedQuestions();
+            solvedQuestions[index] = selectedOption; // Save selected option for this question
+            localStorage.setItem(key, JSON.stringify(solvedQuestions));
+        }
+
+        // Function to show confirmation popup
+        function showConfirmation() {
+            document.getElementById('confirmationPopup').style.display = 'block';
+        }
+
+        // Function to hide confirmation popup
+        function hideConfirmation() {
+            document.getElementById('confirmationPopup').style.display = 'none';
+        }
+
+        // Function to reset solved questions
+        function resetSolvedQuestions() {
+            localStorage.removeItem(`solved_mcqs_${board}_${userClass}_${subject}_${chapter}`);
+            location.reload(); // Reload the page to reset MCQs
+        }
+
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Easing function for deceleration (ease-out)
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        // Function to slow scroll to element with easing
+        function slowScrollTo(element) {
+            const targetY = element.getBoundingClientRect().top + window.pageYOffset;
+            const startY = window.pageYOffset;
+            const distance = targetY - startY;
+            const duration = 1000; // Slow scroll duration in milliseconds
+            const startTime = performance.now();
+
+            function step(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress); // Apply easing curve
+                const amountToScroll = easedProgress * distance;
+                window.scrollTo(0, startY + amountToScroll);
+
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+
+            window.requestAnimationFrame(step);
+        }
+
+        // Scroll to first unsolved question slowly
+        function scrollToFirstUnsolved() {
+            const solvedQuestions = getSolvedQuestions();
+            const mcqSections = document.querySelectorAll('.mcq-section');
+            let firstUnsolvedElement = null;
+
+            for (let i = 0; i < mcqSections.length; i++) {
+                if (!solvedQuestions.hasOwnProperty(i)) {
+                    firstUnsolvedElement = mcqSections[i];
+                    break;
+                }
+            }
+
+            if (firstUnsolvedElement) {
+                slowScrollTo(firstUnsolvedElement);
+            }
+        }
+
+        // Load MCQs from CSV
+        function loadMCQs() {
+            const csvUrl = formatCsvUrl('mcqs', board, userClass, subject, chapter);
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvData => {
+                    const rows = csvData.split('\n');
+                    const mcqContainer = document.getElementById('mcqContainer');
+                    const solvedQuestions = getSolvedQuestions();
+
+                    rows.forEach((row, index) => {
+                        // Use a regex to split on commas not inside quotes
+                        const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+                        if (values) {
+                            const question = values[0].trim().replace(/(^"|"$)/g, ''); // First value is the question, removing quotes
+                            const optionA = values[1] ? values[1].trim().replace(/(^"|"$)/g, '') : ''; // Second value is option A
+                            const optionB = values[2] ? values[2].trim().replace(/(^"|"$)/g, '') : ''; // Third value is option B
+                            const optionC = values[3] ? values[3].trim().replace(/(^"|"$)/g, '') : ''; // Fourth value is option C
+                            const optionD = values[4] ? values[4].trim().replace(/(^"|"$)/g, '') : ''; // Fifth value is option D
+                            const correctOption = values[5] ? values[5].trim().replace(/(^"|"$)/g, '') : ''; // Sixth value is correct option
+
+                            // Create the MCQ section
+                            const mcqSection = document.createElement('div');
+                            mcqSection.className = 'mcq-section';
+                            mcqSection.innerHTML = `
+                        <div class="question">Q${index + 1}. ${question}</div>
+                        <div class="options">
+                            <div class="option" data-correct="${correctOption}" data-option="a">${optionA}</div>
+                            <div class="option" data-correct="${correctOption}" data-option="b">${optionB}</div>
+                            <div class="option" data-correct="${correctOption}" data-option="c">${optionC}</div>
+                            <div class="option" data-correct="${correctOption}" data-option="d">${optionD}</div>
+                        </div>
+                    `;
+                            mcqContainer.appendChild(mcqSection);
+
+                            // Check if this question was already solved
+                            if (solvedQuestions.hasOwnProperty(index)) {
+                                const selectedOption = solvedQuestions[index];
+                                const selectedOptionElement = mcqSection.querySelector(`.option[data-option="${selectedOption}"]`);
+                                const correctOptionElement = mcqSection.querySelector(`.option[data-option="${correctOption}"]`);
+
+                                if (selectedOptionElement) {
+                                    selectedOptionElement.classList.add('selected');
+                                    if (selectedOption === correctOption) {
+                                        selectedOptionElement.classList.add('correct');
+                                    } else {
+                                        selectedOptionElement.classList.add('incorrect');
+                                        correctOptionElement.classList.add('correct');
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Add event listeners for MCQ options
+                    document.querySelectorAll('.mcq-section').forEach((section, index) => {
+                        section.querySelectorAll('.option').forEach(option => {
+                            option.addEventListener('click', function () {
+                                const parent = this.parentNode;
+                                const correctOption = parent.querySelector(`.option[data-option="${this.dataset.correct}"]`);
+
+                                parent.querySelectorAll('.option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+
+                                this.classList.add('selected');
+                                if (this.dataset.option === this.dataset.correct) {
+                                    this.classList.add('correct');
+                                } else {
+                                    this.classList.add('incorrect');
+                                    correctOption.classList.add('correct');
+                                }
+
+                                // Save the solved question with the selected option
+                                saveSolvedQuestion(index, this.dataset.option);
+                            });
+                        });
+                    });
+
+                    // Scroll to the first unsolved question
+                    scrollToFirstUnsolved();
+                })
+                .catch(error => console.error('Error loading MCQs:', error));
+        }
+
+        // Load MCQs when the page loads
+        loadMCQs();
+
+        // Toggle dropdown menu and close on outside click
+        function toggleDropdown() {
+            const dropdown = document.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function handleClickOutside(event) {
+                if (!event.target.closest('.dropdown-button') && !event.target.closest('.dropdown')) {
+                    dropdown.style.display = 'none';
+                    document.removeEventListener('click', handleClickOutside); // Remove event listener after closing
+                }
+            });
+        }
+
+    </script>
+    <!-- ripple effect script -->
+    <script>
+        document.querySelectorAll('.ripple-target').forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const diameter = Math.max(this.clientWidth, this.clientHeight);
+                const radius = diameter / 2;
+
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${e.clientX - this.getBoundingClientRect().left - radius}px`;
+                ripple.style.top = `${e.clientY - this.getBoundingClientRect().top - radius}px`;
+                ripple.classList.add('ripple');
+
+                // Remove previous ripple effect if exists
+                const existingRipple = this.querySelector('.ripple');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+
+                // Add new ripple
+                this.appendChild(ripple);
+
+                // Apply animation
+                ripple.style.animation = 'ripple-animation 600ms linear';
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>

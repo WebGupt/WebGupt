@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapters</title>
+    <link rel="stylesheet" href="styles.css"> <!-- General styles for navbar and body -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            padding-top: 110px !important;
+        }
+
+        .title h2 {
+            font-size: 1.8rem;
+        }
+
+        .navbar {
+            padding-left: 10px !important;
+            padding-block: 22px !important;
+        }
+
+        .spancontainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #subjectTitle {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .content {
+            padding-top: 10px !important;
+        }
+
+        .chapter-container {
+            margin-bottom: 80px;
+            padding-top: 6px !important;
+        }
+
+        .section-container {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .box {
+            margin-bottom: 10px;
+        }
+
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+
+        .chapter-box {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-chapter {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+            <h2>Chapters</h2>
+        </div>
+    </nav>
+
+    <div class="spancontainer">
+        <span id="subjectTitle"></span>
+    </div>
+
+    <section class="chapter-container" id="chapterContainer">
+        <!-- Chapters and sections will be populated dynamically here -->
+    </section>
+
+    <div id="bottom-navbar"></div>
+
+    <script src="script.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const board = urlParams.get('board');
+        const userClass = urlParams.get('class');
+        let subject = urlParams.get('subject');
+        const type = urlParams.get('type');
+        const page = urlParams.get('page'); // New parameter to track the previous page
+
+        subject = subject.replace(/\s+/g, '_');
+
+        function goBack() {
+            window.location.href = page || `subject.html?board=${board}&class=${userClass}&type=${type}`;
+        }
+
+        document.querySelector('.back-button').onclick = goBack;
+
+        document.getElementById('subjectTitle').textContent = subject.replace(/_/g, ' ');
+
+        const csvFilePath = `Chapters/chapters_${board}_${userClass}_${subject}.csv`;
+        console.log(`Fetching chapters from: ${csvFilePath}`);
+
+        fetch(csvFilePath)
+            .then(response => response.text())
+            .then(csvData => {
+                const rows = csvData.split('\n');
+                const chapterContainer = document.getElementById('chapterContainer');
+                let currentSection = null;
+
+                rows.forEach(row => {
+                    const [sectionOrId, name] = row.split(',', 2);
+
+                    if (sectionOrId.toLowerCase() === 'section' && name) {
+                        const sectionBox = document.createElement('div');
+                        sectionBox.className = 'section-container';
+                        sectionBox.innerHTML = `<h3>${name.trim()}</h3>`;
+                        chapterContainer.appendChild(sectionBox);
+                        currentSection = sectionBox;
+                    } else if (name) {
+                        const chapterBox = document.createElement('div');
+                        chapterBox.className = 'chapter-box';
+                        chapterBox.innerHTML = `<h4>${sectionOrId.trim()} ${name.trim()}</h4><i class="fa-solid fa-chevron-right"></i>`;
+                        chapterBox.dataset.page = `${type}.html`;
+                        chapterBox.dataset.chapter = name.trim();
+                        if (currentSection) {
+                            currentSection.appendChild(chapterBox);
+                        } else {
+                            chapterContainer.appendChild(chapterBox);
+                        }
+                    }
+                });
+
+                document.querySelectorAll('.chapter-box').forEach(box => {
+                    box.addEventListener('click', function (e) {
+                        const ripple = document.createElement('span');
+                        ripple.classList.add('ripple-chapter');
+
+                        this.appendChild(ripple);
+
+                        const diameter = Math.max(this.clientWidth, this.clientHeight);
+                        ripple.style.width = ripple.style.height = `${diameter}px`;
+
+                        const rect = this.getBoundingClientRect();
+                        const x = e.clientX - rect.left - diameter / 2;
+                        const y = e.clientY - rect.top - diameter / 2;
+
+                        ripple.style.left = `${x}px`;
+                        ripple.style.top = `${y}px`;
+
+                        ripple.addEventListener('animationend', () => {
+                            ripple.remove();
+                        });
+
+                        const pageType = this.dataset.page;
+                        const chapter = this.dataset.chapter;
+                        setTimeout(() => {
+                            window.location.href = `${pageType}?board=${board}&class=${userClass}&subject=${subject}&chapter=${chapter}&type=${type}&page=${encodeURIComponent(window.location.href)}`;
+                        }, 400);
+                    });
+                });
+            })
+            .catch(error => console.error('Error loading chapters:', error));
+
+        localStorage.setItem('lastPage', window.location.href);
+        localStorage.setItem('selectedSubject', subject.replace(/_/g, ' '));
+    </script>
+
+</body>
+</html>

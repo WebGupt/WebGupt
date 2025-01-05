@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>MCQs</title>
+    <style>
+        /* General Styles */
+        body {
+        padding-top: 110px !important;
+       }
+        .title h2 {
+            font-size: 1.8rem;
+        }
+        .navbar {
+            padding-left:10px !important;
+            padding-block: 22px !important;
+        }
+        .content {
+            padding-top: 10px !important;
+        }
+        .icon-wrapper {
+            position: relative !important;
+            width: 47px;
+        }
+        /* MCQ Container Styles */
+        .mcq-container {
+            padding: 16px;
+            margin: 0px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .mcq-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #292929;
+            border-radius: 8px;
+            border: 1px solid #292929;
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .options {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #444;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .option:hover {
+            background-color: #555;
+        }
+        
+        .option.correct {
+            background-color: rgb(68, 184, 84);
+        }
+
+        .option.incorrect {
+            background-color: #dc3545;
+        }
+
+        .option.selected.correct {
+            background-color: #34ce48;
+        }
+
+        .option.selected.incorrect {
+            background-color: #e04156;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with back button and 'MCQs' title -->
+    <nav class="navbar">
+        <div class="back-button icon-wrapper" onclick="goBack();">
+            <i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="title">
+        <h2>MCQs</h2>
+    </div>
+    </nav>
+
+    <!-- Main Content: MCQs List -->
+    <section class="mcq-container" id="mcqContainer">
+        <!-- MCQs will be populated dynamically here -->
+    </section>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+    
+        // Get URL parameters
+        const board = getUrlParam('board');
+        const userClass = getUrlParam('class');
+        const subject = getUrlParam('subject');
+        const chapter = getUrlParam('chapter');
+        const type = getUrlParam('type');
+        const page = getUrlParam('page'); // Get the page parameter for back navigation
+    
+        // Function to format URL for CSV
+        function formatCsvUrl(type, board, userClass, subject, chapter) {
+            return `${type}/${type.toLowerCase()}_${board}_${userClass}_${subject}_${chapter}.csv`;
+        }
+    
+        // Function to handle back button
+        function goBack() {
+            window.location.href = page || `chapter.html?board=${board}&class=${userClass}&subject=${subject}&type=${type}&page=${encodeURIComponent(window.location.href)}`;
+        }
+    
+        // Get solved questions from localStorage
+        function getSolvedQuestions() {
+            const key = `solved_mcqs_${board}_${userClass}_${subject}_${chapter}`;
+            const solved = localStorage.getItem(key);
+            return solved ? JSON.parse(solved) : {};
+        }
+    
+        // Save solved question index to localStorage
+        function saveSolvedQuestion(index, selectedOption) {
+            const key = `solved_mcqs_${board}_${userClass}_${subject}_${chapter}`;
+            const solvedQuestions = getSolvedQuestions();
+            solvedQuestions[index] = selectedOption; // Save selected option for this question
+            localStorage.setItem(key, JSON.stringify(solvedQuestions));
+        }
+    
+        // Easing function for deceleration (ease-out)
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 6);
+        }
+    
+        // Function to slow scroll to element with easing
+        function slowScrollTo(element) {
+            const targetY = element.getBoundingClientRect().top + window.pageYOffset;
+            const startY = window.pageYOffset;
+            const distance = targetY - startY;
+            const duration = 2300; // Slow scroll duration in milliseconds
+            const startTime = performance.now();
+    
+            function step(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = easeOutCubic(progress); // Apply easing curve
+                const amountToScroll = easedProgress * distance;
+                window.scrollTo(0, startY + amountToScroll);
+    
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+    
+            window.requestAnimationFrame(step);
+        }
+    
+        // Scroll to first unsolved question slowly
+        function scrollToFirstUnsolved() {
+            const solvedQuestions = getSolvedQuestions();
+            const mcqSections = document.querySelectorAll('.mcq-section');
+            let firstUnsolvedElement = null;
+    
+            for (let i = 0; i < mcqSections.length; i++) {
+                if (!solvedQuestions.hasOwnProperty(i)) {
+                    firstUnsolvedElement = mcqSections[i];
+                    break;
+                }
+            }
+    
+            if (firstUnsolvedElement) {
+                slowScrollTo(firstUnsolvedElement);
+            }
+        }
+    
+        // Load MCQs from CSV
+        function loadMCQs() {
+            const csvUrl = formatCsvUrl('mcqs', board, userClass, subject, chapter);
+            fetch(csvUrl)
+                .then(response => response.text())
+                .then(csvData => {
+                    const rows = csvData.split('\n');
+                    const mcqContainer = document.getElementById('mcqContainer');
+                    const solvedQuestions = getSolvedQuestions();
+                    
+                    rows.forEach((row, index) => {
+                        const [question, optionA, optionB, optionC, optionD, correctOption] = row.split(',');
+    
+                        if (question && optionA && optionB && optionC && optionD) {
+                            const mcqSection = document.createElement('div');
+                            mcqSection.className = 'mcq-section';
+                            mcqSection.innerHTML = `
+                                <div class="question">Q${index + 1}. ${question.trim()}</div>
+                                <div class="options">
+                                    <div class="option" data-correct="${correctOption.trim()}" data-option="a">${optionA.trim()}</div>
+                                    <div class="option" data-correct="${correctOption.trim()}" data-option="b">${optionB.trim()}</div>
+                                    <div class="option" data-correct="${correctOption.trim()}" data-option="c">${optionC.trim()}</div>
+                                    <div class="option" data-correct="${correctOption.trim()}" data-option="d">${optionD.trim()}</div>
+                                </div>
+                            `;
+                            mcqContainer.appendChild(mcqSection);
+    
+                            // Check if this question was already solved
+                            if (solvedQuestions.hasOwnProperty(index)) {
+                                const selectedOption = solvedQuestions[index];
+                                const selectedOptionElement = mcqSection.querySelector(`.option[data-option="${selectedOption}"]`);
+                                const correctOptionElement = mcqSection.querySelector(`.option[data-option="${correctOption.trim()}"]`);
+    
+                                if (selectedOptionElement) {
+                                    selectedOptionElement.classList.add('selected');
+                                    if (selectedOption === correctOption.trim()) {
+                                        selectedOptionElement.classList.add('correct');
+                                    } else {
+                                        selectedOptionElement.classList.add('incorrect');
+                                        correctOptionElement.classList.add('correct');
+                                    }
+                                }
+                            }
+                        }
+                    });
+    
+                    // Add event listeners for MCQ options
+                    document.querySelectorAll('.mcq-section').forEach((section, index) => {
+                        section.querySelectorAll('.option').forEach(option => {
+                            option.addEventListener('click', function() {
+                                const parent = this.parentNode;
+                                const correctOption = parent.querySelector(`.option[data-option="${this.dataset.correct}"]`);
+    
+                                parent.querySelectorAll('.option').forEach(opt => {
+                                    opt.classList.remove('selected', 'correct', 'incorrect');
+                                });
+    
+                                this.classList.add('selected');
+                                if (this.dataset.option === this.dataset.correct) {
+                                    this.classList.add('correct');
+                                } else {
+                                    this.classList.add('incorrect');
+                                    correctOption.classList.add('correct');
+                                }
+    
+                                // Save the solved question with the selected option
+                                saveSolvedQuestion(index, this.dataset.option);
+                            });
+                        });
+                    });
+    
+                    // Scroll to the first unsolved question
+                    scrollToFirstUnsolved();
+                })
+                .catch(error => console.error('Error loading MCQs:', error));
+        }
+    
+        // Load MCQs when the page loads
+        loadMCQs();
+    </script>
+    
+    
+    <script src="script.js"></script>
+</body>
+</html>
