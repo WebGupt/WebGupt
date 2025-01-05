@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // // inspect preventer starts here
-document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-});
+// document.addEventListener('contextmenu', function (e) {
+//     e.preventDefault();
+// });
 // // inspect preventer ends here
 
 // Set class name dynamically
