@@ -10,10 +10,13 @@
         /* General Styles */
         body {
             padding-top: 110px !important;
+            background-color: #f8f8f8;
+            
         }
 
         .title h2 {
             font-size: 1.8rem;
+            color: #161616;
 
         }
 
@@ -21,6 +24,7 @@
             padding-left: 10px !important;
             padding-block: 22px !important;
             position: absolute;
+            background-color: #40ff60 !important;
 
         }
 
@@ -37,22 +41,25 @@
         .mcq-container {
             padding: 16px;
             margin: 0px;
-            background-color: #1a1a1a;
+            background-color: #f3f3f3;
             border-radius: 8px;
         }
 
         .mcq-section {
             margin-bottom: 20px;
             padding: 15px;
-            background-color: #292929;
+            background-color: #f8f8f8;
             border-radius: 8px;
-            border: 1px solid #292929;
+            border: 1px solid #f8f8f8;
+            box-shadow: 10px 10px 14px rgb(202, 209, 202);
+            border: 1px solid rgb(165, 165, 165);
+
         }
 
         .question {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #fff;
+            color: #000000;
         }
 
         .options {
@@ -64,7 +71,7 @@
         .option {
             margin: 5px 0;
             padding: 10px;
-            background-color: #444;
+            background-color: #f3f3f3;
             border-radius: 5px;
             cursor: pointer;
             color: #fff;
@@ -72,11 +79,12 @@
         }
 
         .option:hover {
-            background-color: #555;
+            background-color: #dddddd;
         }
 
         .option.correct {
-            background-color: rgb(68, 184, 84);
+            background-color: rgb(109, 248, 127);
+            border: 1.5px solid rgb(76, 252, 60);
         }
 
         .option.incorrect {
@@ -84,11 +92,14 @@
         }
 
         .option.selected.correct {
-            background-color: #34ce48;
+            background-color: #92ffa1;
+            border: 1.5px solid rgb(20, 255, 98);
+            
         }
 
         .option.selected.incorrect {
-            background-color: #e04156;
+            background-color: #ff9eab;
+            border: 1.5px solid rgb(248, 45, 45);
         }
 
         /* Dropdown Menu Styles */
@@ -200,16 +211,18 @@
         .option {
             margin: 5px 0;
             padding: 10px;
-            background-color: #444;
+            background-color: #ffffff;
             border-radius: 5px;
             cursor: pointer;
-            color: #fff;
+            color: #000000;
+            border: 1px solid rgb(165, 165, 165);
+            box-shadow: 4px 4px 10px rgb(218, 217, 217);
             /* Smooth transitions for background, color, box-shadow, and transform */
             transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
 
         .option:hover {
-            background-color: #555;
+            background-color: #e2e2e2;
         }
 
         .option:active {
