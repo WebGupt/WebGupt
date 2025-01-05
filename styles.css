@@ -379,3 +379,7 @@ h4 {
     font-size: 1.6rem;
     color: #ffffff;
 }
+
+body::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+  }
