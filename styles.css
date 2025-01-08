@@ -5,10 +5,6 @@
 /* Removes blue highlight on clickable elements */
 * {
     -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    /* Prevents text selection */
-    user-select: none;
-    /* Prevents text selection for non-webkit browsers */
 }
 
 * {
@@ -26,26 +22,6 @@ body {
 
 
 
-}
-
-/* Disable text selection */
-body,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-div {
-    -webkit-user-select: none;
-    /* Chrome, Safari, and Opera */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* Internet Explorer/Edge */
-    user-select: none;
-    /* Non-prefixed version, currently supported by most browsers */
 }
 
 /* Fade-in on page load */
